@@ -8,8 +8,8 @@ form = {'Name': 'Her X-1', 'Rad': 0.1, 'DB': 'photcat', 'OUT': 'web', 'SHORT': '
 
 r = req.post(url, data=form)
 # print(r.text)
-data = r.text
-print(data)
+data = r.text.splitlines()
+# print(data)
 
 
 time = []
@@ -23,11 +23,10 @@ for i in data:
         mag_err.append(float(entry[3].strip("'")))
         time.append(float(entry[6].rstrip('</tr>').strip("'")))
 
-print(mag)
 
 plt.figure()
 plt.xlabel('Time (MJD)')
 plt.ylabel('Magnitude')
-plt.errorbar(time, mag, yerr=mag_err, fmt='o')
+plt.errorbar(time, mag, yerr=mag_err, fmt='o', markersize=3, capsize=2)
 plt.savefig('Plot_1_1.png')
 

@@ -27,6 +27,7 @@ for i in data:
 plt.figure()
 plt.xlabel('Time (MJD)')
 plt.ylabel('Magnitude')
-plt.errorbar(time, mag, yerr=mag_err, fmt='o', markersize=3, capsize=2)
+plt.errorbar(time, mag, yerr=mag_err, fmt='o', mfc='black', ms=2, mec='black', ecolor='red', capsize=2)
 plt.savefig('Plot_1_1.png')
+
 

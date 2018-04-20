@@ -13,8 +13,8 @@ T = n/Fs
 frq = k/T # two sides frequency range
 frq = frq[range(n/2)] # one side frequency range
 
-Y = np.fft.fft(y)/n # fft computing and normalization
-Y_disp = Y[range(n/2)]
+Y = np.fft.fft(y) # fft computing and normalization
+Y_disp = Y[range(n/2)]/n
 
 inv = np.fft.ifft(Y)
 
@@ -24,8 +24,8 @@ ax[0].set_xlabel('Time')
 ax[0].set_ylabel('Amplitude')
 ax[0].set_title('Signal')
 ax[1].plot(frq,abs(Y_disp),'r') # plotting the spectrum
-ax[1].set_xlabel('Freq (Hz)')
-ax[1].set_ylabel('|Y(freq)|')
+ax[1].set_xlabel(r'$f=\frac{k}{L}$ (Hz)')
+ax[1].set_ylabel('$|h_k|$')
 ax[1].set_title('Positive Spectrum (FFT)')
 ax[2].plot(t,inv)
 ax[2].set_xlabel('Time')

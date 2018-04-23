@@ -2,7 +2,7 @@
 \documentclass[11pt]{article}
 \setlength{\parskip}{\baselineskip}%
 \setlength{\parindent}{0pt}%
-\usepackage{amsmath,amssymb,amsthm,physics,graphicx,titling,hyperref}
+\usepackage{amsmath,amssymb,amsthm,physics,graphicx,titling,hyperref,subcaption}
 \usepackage[margin=0.5in]{geometry}
 \newcommand{\subtitle}[1]{%
   \posttitle{%
@@ -104,7 +104,7 @@
 \label{cos_signal}
 \end{figure}
 	\newpage
-	\textbf{Gaussian function:} First, we find the Fourier series of the Gaussian function $h(t) = e^{-B(t-\frac{L}{2})^2}$:
+	\textbf{Gaussian function:} First, we find the Fourier series of the Gaussian function $h(t) = A e^{-B(t-\frac{L}{2})^2}$:
 	\begin{align}
 	\tilde h_k =& \frac{1}{L} \int_0^L h(t) e^{2 \pi i f_{k} t} \dd{t} \\
 	=& \frac{1}{L} \int_0^L A e^{-B(t-\frac{L}{2})^2} e^{2 \pi i f_{k} t} \dd{t} \\
@@ -185,5 +185,55 @@
 \newpage
 
 \section{Unequally Sampled Data and the Lomb-Scargle Algorithm}
+\begin{enumerate}
+	\item We use the astropy implementation of the Lomb-Scargle algorithm given by \textit{astropy.stats.LombScargle}.
+	
+	\item We obtain Lomb-Scargle periodograms of some constructed equally sampled datasets for comparison with the FFT absolute-value spectra we have obtained:
+	\begin{figure}[!htp]
+	\centering
+	\includegraphics[scale=0.70]{sine_lombscargle.png}
+	\caption{We obtain the Lomb-Scargle periodogram of the signal $h(t)=1 + 3 \cos (4t+0.1)$. As expected, we see a peak at the 4 Hz position on the periodogram, just as we observed on the FFT absolute-value spectrum of this signal (see Part I.5). However, the Lomb-Scargle algorithm we are using cannot handle zero-frequency terms and therefore we have to diregard any offset in the signal when taking the periodogram; we do not observe the zero-frequency peak we observed on the FFT.}
+	\label{ls_sine}
+	\end{figure}
+	
+	\begin{figure}[!htp]
+	\centering
+	\includegraphics[scale=0.70]{gaussian_lombscargle.png}
+	\caption{We obtain the Lomb-Scargle periodogram of the Gaussian signal $h(t) = A e^{-B(t-\frac{L}{2})^2}$ with $A=4$ and $B=250$. We observe features in the periodogram in the same region as in the FFT of this signal (see part I.5), as we would expect, but this time the features are heavily distorted with respect to the scaled Gaussian centered at zero that we obtained for the FFT.}
+	\label{ls_gaussian}
+	\end{figure}
+	\newpage
+	
+	\begin{figure}[htp]
+	\centering
+	\includegraphics[scale=0.80]{arecibo_lombscargle.png}
+	\caption{We obtain the Lomb-Scargle periodogram of the Arecibo data analyzed above (part II.4). As expected from the FFT spectrum, we observe a peak at the 1420.000137 MHz frequency (again, remember that our frequency-axis is shifted backwards 1420 MHz). We observe that in the periodogram, the Gaussian envelope appears to cause some distortion in the peak, but does not show up as the characteristic scaled and shifted Gaussian feature observed at the peak in the FFT spectrum.}
+	\label{ls_arecibo}
+	\end{figure}
+	\newpage
+	
+	\item We grab and parse the data for source Her X-1 from the Catalina Real Time Survey using the \textit{vo.table} approach from Assignment 1. We then obtain a Lomb-Scargle periodogram of the data:
+	\begin{figure}[htp]
+	\centering
+	\includegraphics[scale=0.80]{her_x-1_lombscargle.png}
+	\caption{As expected, we find the orbital period of 1.70 days, showing up on the periodogram as the largest peak occuring at $f=\frac{1}{1.70} \ Day^{-1} = 0.588 \ Day^{-1}$. We also find a number of less prominent peaks, possibly corresponding to frequency shift, irregular sampling windows, higher-order harmonics occuring due to the signal not being sinusoidal, duplicated peaks due to some asymmetry in the signal, and beats between significant frequencies.}
+	\label{ls_herx1}
+	\end{figure}
+	
+	Finally, we confirm that we have found the correct first harmonic for our signal by folding our data around a period of 1.70 days (i.e. we collapse our dataset onto a single period, taking care to propagate uncertainties):
+	
+\begin{figure}[!htbp]
+  \begin{subfigure}[b]{0.5\textwidth}
+    \includegraphics[width=\textwidth]{her_x-1.png}
+    \caption{Her X-1 original data.}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.5\textwidth}
+    \includegraphics[width=\textwidth]{folded_her_x-1.png}
+    \caption{Folded Her X-1 data (two periods plotted for convenience).}
+  \end{subfigure}
+  \caption{The data folded around a period of 1.70 days closely resembles what we would expect for the lightcurve of an eclipsing binary star system, confirming that we have found the correct first harmonic (i.e. the orbital period of our binary star system).}
+\end{figure}
 
+\end{enumerate}
 \end{document}

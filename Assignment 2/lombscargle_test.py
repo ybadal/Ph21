@@ -2,17 +2,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pylab import rcParams
 rcParams['figure.figsize']=8,4
-import scipy.signal as signal
+from astropy.stats import LombScargle as ls
 
-Fs = 1500.0;  # sampling rate
+Fs = 150.0;  # sampling rate
 Ts = 1.0/Fs; # sampling interval
 t = np.arange(0.01,1.0,Ts) # time vector
 
-y = 4*np.exp(-250*(t-0.5)**2) # gaussian with B=250, A=4
+y = 3*np.cos(2*np.pi*4*t) # sine wave with freq 4 Hz
+# y = 4*np.exp(-250*(t-0.5)**2) # gaussian with B=250, A=4
 
-frq = np.linspace(0.001,75,15000)
-
-pgram = signal.lombscargle(t, y, frq, normalize=True)
+frq, pgram = ls(t, y).autopower(minimum_frequency=0.01, maximum_frequency=75)
 
 fig, ax = plt.subplots(2,1)
 ax[0].plot(t,y)
@@ -25,5 +24,5 @@ ax[1].set_ylabel('$Power$')
 ax[1].set_title('Lomb-Scargle Periodogram')
 
 plt.tight_layout()
-plt.savefig('gaussian_lombscargle.png')
+plt.savefig('sine_lombscargle.png')
 

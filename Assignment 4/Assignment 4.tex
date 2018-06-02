@@ -1,0 +1,130 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Preamble
+\documentclass[11pt]{article}
+\setlength{\parskip}{\baselineskip}%
+\setlength{\parindent}{0pt}%
+\usepackage{amsmath,amssymb,amsthm,physics,graphicx,titling,hyperref}
+\usepackage[margin=0.5in]{geometry}
+\newcommand{\subtitle}[1]{%
+  \posttitle{%
+    \par\end{center}
+    \begin{center}\large#1\end{center}
+    \vskip0.5em}%
+}
+
+\usepackage{graphicx}
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Heading
+	\title{Ph21 Assignment 4 - Bayesian Analysis}
+	\author{Yovan Badal}
+	\date{05/29/2018}
+	\maketitle
+	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Body
+\section{Coin Toss}
+We use the likelihood distribution for Binomial processes (given in the reading for this assignment). We then calculate the posterior by assuming a constant prior and a Gaussian prior. Here are the results of our simulations:
+
+\begin{figure}[!htbp]
+\centering
+  \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{{const_0.3}.png}
+  \end{minipage}
+   \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{{const_0.5}.png}
+  \end{minipage}
+  \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{{const_0.9}.png}
+  \end{minipage}
+  \caption{Posterior distributions for multiple $n$, for a uniform prior. Note that the plots have been normalized. Observe that the peak becomes narrower and closer to the actual H for larger $n$.}
+\end{figure}
+\newpage
+
+We conduct the same simulation again, but this time we assume a Gaussian prior. The results are given below for different means and standard deviations of the priors:
+\begin{figure}[!htbp]
+\centering
+  \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{{gaussian_0.5_0.2_0.3}.png}
+  \end{minipage}
+   \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{{gaussian_0.5_0.49_0.3}.png}
+  \end{minipage}
+   \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{{gaussian_0.5_0.4_0.1}.png}
+  \end{minipage}
+   \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{{gaussian_0.9_0.6_0.1}.png}
+  \end{minipage}
+   \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{{gaussian_0.9_0.6_0.3}.png}
+  \end{minipage}
+   \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{{gaussian_0.9_0.8_0.1}.png}
+  \end{minipage}
+  \caption{Posterior distributions for multiple $n$, for a Gaussian prior. Again, the plots have been normalized. Observe that the peak becomes narrower and closer to the actual H for larger $n$, and that the peak converges much faster to the actual H for $\mu$ within small $\sigma$ of H.}
+\end{figure}
+\newpage
+
+\section{The lighthouse problem}
+\subsection{PDF of the lighthouse problem}
+Let the azimuth of the $k^{th}$ pulse as measured clockwise from the normal from the lighthouse to the shore be given by $\theta_k$. We assume that $\theta_k \sim \text{Uniform}(0, 2\pi)$.
+
+Using the geometry of the problem, we can see that the CDF, say $F_k = P(x_k \leq x)$ where $x$ is some position on the shore, of the distribution of $x_k$ is given by:
+\[
+F_k = \frac{1}{4} + \frac{1}{2 \pi}\arctan{\bigg(\frac{x-\alpha}{\beta}\bigg)}
+\]
+Then we differentiate w.r.t. $x$ and find the PDF, say $p_k(x)$ of $x_k$:
+\[
+p_k(x) = \frac{\beta / 2\pi}{(x-\alpha)^2 + \beta^2}
+\]
+This is known as a Lorentzian or Cauchy distribution, and is our likelihood function.
+
+\subsection{Posterior for known $\beta$}
+For this section and for the next, we choose "true" values for our parameters of $\alpha=1.0$ and $\beta = 1.5$. We write a script to generate $x_k$ data for a total number of pulses $n$, and use the data to calculate the posterior assuming a Gaussian prior (since this showed much better convergence than a constant prior, for instance). We start by assuming $\beta$ is known, and plot the posterior for $\alpha$. The results are shown below:
+\begin{figure}[!htbp]
+\centering
+  \begin{minipage}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{{lighthouse_alpha_sig_0.3}.png}
+  \end{minipage}
+   \begin{minipage}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{{lighthouse_alpha_sig_0.1}.png}
+  \end{minipage}
+  \caption{Posterior distributions for multiple $n$, for a Gaussian prior and known $\alpha$. Note that the plots have been normalized. Observe that the peak becomes narrower and closer to the actual $\alpha$ for larger $n$.}
+\end{figure}
+
+Interestingly enough, we can observe that $\langle x_k \rangle$ is a very poor estimator of $\alpha$. This is to be expected: from our $p_k(x)$, we can observe that the Cauchy distribution has no finite second moment (and therefore no finite variance), violating one of the assumtions of the Central Limit Theorem. 
+
+For instance, we can use a change in variables to transform our PDF to one of the form $p_k(x) = \frac{1}{1+x^2}$. Then,
+\begin{align*}
+\mathbb{E}[X^2] & \propto \int_{-\infty}^{\infty} \frac{x^2}{1+x^2} \dd{x}\\
+& = \int_{-\infty}^{\infty} 1 - \frac{1}{1+x^2} \dd{x}\\
+& = \int_{-\infty}^{\infty} \dd{x} - \int_{-\infty}^{\infty} \frac{1}{1+x^2} \dd{x} \\
+& = \int_{-\infty}^{\infty} \dd{x} - \pi \\
+& = \infty
+\end{align*}
+
+\subsection{Posterior for unknown $\alpha$ and $\beta$}
+We calculate the posterior distribution over a grid of $\alpha$ and $\beta$ values, assuming a Gaussian prior for both parameters. We make use of the a dataset ${x_k}$ generated in the same way as before, with the same "true" values of $\alpha$ and $\beta$. The results are shown below on a color map:
+
+\begin{figure}[!htbp]
+\centering
+   \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{{lighthouse_contour_sig_0.3_10}.png}
+  \end{minipage}
+   \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{{lighthouse_contour_sig_0.1_50}.png}
+  \end{minipage}
+   \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{{lighthouse_contour_sig_0.1_250}.png}
+  \end{minipage}
+  \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{{lighthouse_contour_sig_0.1_10}.png}
+  \end{minipage}
+   \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{{lighthouse_contour_sig_0.1_50}.png}
+  \end{minipage}
+   \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{{lighthouse_contour_sig_0.1_250}.png}
+  \end{minipage}
+ \caption{Colormaps of posteriors over a grid of ($\alpha, \beta$) values for different Gaussian priors and at different progressions in time (the lighthouse emits pulses regularly spaced in time, so the total number of pulses $n$ corresponds to time progression). As before, the posterior converges much faster to a point in parameter-space for Gaussian priors with $\mu$ within a small $\sigma$ of the corresponding parameter.}
+ \end{figure}
+\end{document}

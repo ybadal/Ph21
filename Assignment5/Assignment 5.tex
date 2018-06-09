@@ -1,0 +1,139 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Preamble
+\documentclass[11pt]{article}
+\setlength{\parskip}{\baselineskip}%
+\setlength{\parindent}{0pt}%
+\usepackage{amsmath,amssymb,amsthm,physics,graphicx,titling,hyperref}
+\usepackage[margin=0.5in]{geometry}
+\usepackage[export]{adjustbox}
+\usepackage{color}
+\usepackage{caption}
+\captionsetup{font=footnotesize}
+
+\newcommand{\subtitle}[1]{%
+  \posttitle{%
+    \par\end{center}
+    \begin{center}\large#1\end{center}
+    \vskip0.5em}%
+}
+
+\usepackage{graphicx}
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Heading
+	\title{Ph21 Assignment 5 - Bayesian Analysis}
+	\author{Yovan Badal}
+	\date{06/08/2018}
+	\maketitle
+	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Body
+\section{Coin Toss}
+We use \textit{pymc} models to set the priors and fit to a likelihood model using MCMC sampling. For the coin toss experiment, we set the true value of the probability of heads to 0.40. The results are given below:
+
+\begin{figure}[!htbp]
+\centering
+  \begin{minipage}[b]{0.55\textwidth}
+    \includegraphics[width=\textwidth]{{pHeadsEst_1k_uniform}.png}
+  \end{minipage}
+   \begin{minipage}[b]{0.55\textwidth}
+    \includegraphics[width=\textwidth]{{pHeadsEst_10k_uniform}.png}
+  \end{minipage}
+  \caption{MCMC sampled posterior for a Uniform prior. From top to bottom: 1000 iterations, 10000 iterations.}
+\end{figure}
+\newpage
+
+We conduct the same simulation again, but this time we assume a Gaussian prior. The results are given below for different means and standard deviations of the priors:
+\begin{figure}[!htbp]
+\centering
+  \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{{pHeadsEst_1k_gaussian_0.5_0.2}.png}
+  \end{minipage}
+   \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{{pHeadsEst_1k_gaussian_0.5_0.05}.png}
+  \end{minipage}
+   \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{{pHeadsEst_10k_gaussian_0.5_0.2}.png}
+  \end{minipage}
+   \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{{pHeadsEst_10k_gaussian_0.5_0.05}.png}
+  \end{minipage}
+   \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{{pHeadsEst_10k_gaussian_0.8_0.2}.png}
+  \end{minipage}
+   \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{{pHeadsEst_10k_gaussian_0.8_0.05}.png}
+  \end{minipage}
+  \captionsetup{singlelinecheck=off}
+  \caption[plotList]{From right to left:
+  	\begin{itemize}
+  		\item Top row: \{$\mu=0.5$, $\sigma=0.2$, 1000 iterations\}, \{$\mu=0.5$, $\sigma=0.05$, 1000 iterations\}
+  		\item Middle row: \{$\mu=0.5$, $\sigma=0.2$, 10000 iterations\}, \{$\mu=0.5$, $\sigma=0.05$, 10000 iterations\}
+  		\item Bottom row: \{$\mu=0.8$, $\sigma=0.2$, 10000 iterations\}, \{$\mu=0.8$, $\sigma=0.05$, 10000 iterations\}
+  	\end{itemize}
+  	}
+\end{figure}
+
+Observing the trace indicates that the MC distribution converges very quickly to the posterior (within 20 iterations), and as expected the mean of the sampled posterior converges much more accurately for Gaussian prior with $\mu$ within small $\sigma$ of the true value of the parameter, but with large number of iterations the sampled posterior and estimated parameter are quite good nonetheless. 
+\newpage
+
+\section{The lighthouse problem}
+\subsection{Posterior for unknown $\alpha$ and $\beta$ for the lighthouse as only source}
+We again use MCMC sampling and histogram the samples over 2 dimensions to obtain a 2d colormap of the posterior for the lighthouse problem. We set the true values $\alpha=1.0$, $\beta=1.5$ for the rest of our analysis, and use 50000 iterations with thinning of 5 (we drop every 5 samples to prevent auto-correlation issues) and a burn of 100 (we observe on the trace that the MC distribution converges within ~100 iterations, so we discard the first 100 samples).
+
+\begin{figure}[!htbp]
+\centering
+   \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{{lighthouse_cm_uniform}.png}
+  \end{minipage}
+   \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{{lighthouse_cm_gaussian_wide}.png}
+  \end{minipage}
+   \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{{lighthouse_cm_gaussian_narrow}.png}
+  \end{minipage}
+  \captionsetup{singlelinecheck=off}
+  \caption[plotList]{Colormaps with $\beta$ on x-axis, $\alpha$ on y-axis. From right to left:
+  	\begin{itemize}
+  		\item Top right: Uniform prior
+  		\item Top left: Wide Gaussian priors
+  		\item Bottom: Narrow Gaussian priors
+  	\end{itemize}
+  	}
+\end{figure}
+
+Again, we have much better convergence for the Gaussian prior with $\mu$ within small $\sigma$ of the true values for our parameters, as expected. The centroid of the sampled posteriors however all give reasonably accurate estimates given enough iterations, although the narrow Gaussian priors generate a posterior peaking much more sharply near the true values of the parameters.
+\newpage
+
+\subsection{Lighthouse problem, with interloper}
+To the previous problem, we add an interloper (a secondary source) and run the same MCMC sampling process over the generated data. The results are shown below.
+
+In all cases, we observe relatively poor convergence, regardless of the prior. Furthermore, the parameter estimates given by the centroid are significantly off, with as expected the estimates for the interloper far from the lighthouse being the least accurate. Therefore in this case, MCMC fails to detect the interloper without being provided with more information regarding the nature of the source (now a sum of Cauchy distributions instead of a single Cauchy), and a 4-dimensional fit is necessary.
+
+\begin{figure}
+  \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{{interloper_uniform_near}.png}
+  \end{minipage}
+   \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{{interloper_gaussian_wide_near}.png}
+  \end{minipage}
+   \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{{interloper_gaussian_narrow_near}.png}
+  \end{minipage}
+   \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{{interloper_uniform_far}.png}
+  \end{minipage}
+   \begin{minipage}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{{interloper_gaussian_wide_far}.png}
+  \end{minipage}
+   \begin{minipage}[b]{0.45\textwidth \color{white} \ right}
+    \includegraphics[width=\textwidth]{{interloper_gaussian_narrow_far}.png}
+  \end{minipage}
+  \captionsetup{singlelinecheck=off}
+  \caption[plotList]{From right to left:
+  	\begin{itemize}
+  		\item Top row: \{Uniform prior, interloper near lighthouse\}, \{Wide Gaussian prior, interloper near lighthouse\}
+  		\item Middle row: \{Narrow Gaussian prior, interloper near lighthouse\}, \{Uniform prior, interloper far from lighthouse\}
+  		\item Bottom row: \{Wide Gaussian prior, interloper far from lighthouse\}, \{Narrow Gaussian prior, interloper far from lighthouse\}
+  	\end{itemize}
+  	}
+ \end{figure}
+\end{document}

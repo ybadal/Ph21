@@ -1,0 +1,42 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Preamble
+\documentclass[11pt]{article}
+\setlength{\parskip}{\baselineskip}%
+\setlength{\parindent}{0pt}%
+\usepackage{amsmath,amssymb,amsthm,physics,graphicx,titling,hyperref}
+\usepackage[margin=0.45in]{geometry}
+\usepackage[export]{adjustbox}
+\usepackage{color}
+\usepackage{caption}
+\usepackage{verbatim}
+\usepackage{fancyvrb}
+\captionsetup{font=footnotesize}
+
+\newcommand{\subtitle}[1]{%
+  \posttitle{%
+    \par\end{center}
+    \begin{center}\large#1\end{center}
+    \vskip0.5em}%
+}
+
+\usepackage{graphicx}
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Heading
+	\title{Ph 21 - Assignment 6 - Principal Componenent Analysis}
+	\author{Yovan Badal}
+	\date{06/09/2018}
+	\maketitle
+	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Body
+\section{2D Linear dataset}
+We simulate a simple 2D array of linearly dependent datapoints, including errors (simulated by multiplying the samples by samples from a normal distribution with mean 1). Testing our PCA analysis code gives the following output:
+\verbatiminput{linear_test.txt}
+
+We can easily observe that our PCA analysis correctly identifies a single degree of freedom in our data, since only one of the components contributes significantly to the covariance.
+
+\section{4D Linear dataset}
+We simulate a simple 4D array of linearly dependent datapoints by a simple extension of the code for the 2D linear dataset, including error. Testing our PCA analysis code gives the following output:
+\verbatiminput{linear4d_test.txt}
+
+Again we observe that our PCA analysis correctly identifies a single degree of freedom in our data, since only one of the components contributes significantly to the covariance.
+\end{document}
